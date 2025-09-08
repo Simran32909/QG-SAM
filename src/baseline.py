@@ -137,12 +137,14 @@ def run_baseline_test():
     image_id_to_file = {img['id']: img['file_name'] for img in annotations['images']}
     file_to_image_id = {img['file_name']: img['id'] for img in annotations['images']}
     
-    image_files = os.listdir(test_dir)
-    image_files = [f for f in image_files if f.endswith('.jpg')]
-    sample_images = image_files[:5]
+    # Use the common test set with 500 samples
+    sys.path.append("/scratch/tathagata.ghosh/qgsam/utils")
+    from common_test_set import get_common_test_set
+    sample_images = get_common_test_set(test_dir, num_samples=500)
     
-    print(f"Found {len(image_files)} images in {test_dir}")
-    print(f"Sample images: {sample_images}")
+    print(f"Using {len(sample_images)} test images")
+    # Don't print all 500 image names to keep output clean
+    print(f"First few test images: {sample_images[:5]}...")
     
     results = []
     
