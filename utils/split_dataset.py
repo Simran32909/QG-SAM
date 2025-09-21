@@ -1,68 +1,122 @@
 import os
-import json
-import random
 import shutil
+import random
+import argparse
 from pathlib import Path
+from rich.console import Console
+from rich.progress import Progress
 
-def split_dataset():
-    with open('/scratch/tathagata.ghosh/qgsam/hat_dataset/train/_annotations.coco.json', 'r') as f:
-        coco_data = json.load(f)
+def split_dataset(base_dir, output_dir, train_ratio=0.8, val_ratio=0.1, seed=42):
+    """
+    Splits a dataset of images and masks into train, validation, and test sets.
+
+    Args:
+        base_dir (str): The path to the Kvasir-SEG dataset directory.
+        output_dir (str): The path to save the split dataset.
+        train_ratio (float): The proportion of the dataset to allocate for training.
+        val_ratio (float): The proportion of the dataset to allocate for validation.
+        seed (int): Random seed for reproducibility.
+    """
+    console = Console()
+    console.print(f"[bold cyan]Starting dataset split...[/bold cyan]")
     
-    image_ids = [
-        image['id'] for image in coco_data['images']
-    ]
-    random.shuffle(image_ids)
-    train_size=int(len(image_ids)*0.8)
-    val_size=int(len(image_ids)*0.1)
+    # Define source directories
+    images_src = Path(base_dir) / 'images'
+    masks_src = Path(base_dir) / 'masks_png'
 
-    train_ids = set(image_ids[:train_size])
-    val_ids = set(image_ids[train_size:train_size+val_size])
-    test_ids = set(image_ids[train_size+val_size:])
+    # Check if source directories exist
+    if not images_src.is_dir() or not masks_src.is_dir():
+        console.print(f"[bold red]Error:[/bold red] Source 'images' or 'masks' directory not found in '{base_dir}'")
+        return
 
-    train_data = {'images': [], 'annotations': [], 'categories': coco_data['categories']}
-    val_data = {'images': [], 'annotations': [], 'categories': coco_data['categories']}
-    test_data = {'images': [], 'annotations': [], 'categories': coco_data['categories']}
+    # Get list of image files
+    image_files = [f for f in os.listdir(images_src) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    if not image_files:
+        console.print(f"[bold red]Error:[/bold red] No images found in '{images_src}'. Please populate the directory.")
+        return
+        
+    console.print(f"Found {len(image_files)} images to split.")
 
-    for img in coco_data['images']:
+    # Shuffle the files for a random split
+    random.seed(seed)
+    random.shuffle(image_files)
 
-        if img['id'] in train_ids:
-            train_data['images'].append(img)
-        elif img['id'] in val_ids:
-            val_data['images'].append(img)
-        else:
-            test_data['images'].append(img)
+    # Calculate split indices
+    num_images = len(image_files)
+    train_end = int(num_images * train_ratio)
+    val_end = train_end + int(num_images * val_ratio)
+
+    train_files = image_files[:train_end]
+    val_files = image_files[train_end:val_end]
+    test_files = image_files[val_end:]
+
+    sets = {
+        'train': train_files,
+        'val': val_files,
+        'test': test_files
+    }
+
+    # Create destination directories and copy files
+    output_path = Path(output_dir)
+    with Progress() as progress:
+        main_task = progress.add_task("[blue]Copying files...", total=num_images)
+        for set_name, files in sets.items():
+            img_dest = output_path / set_name / 'images'
+            mask_dest = output_path / set_name / 'masks'
+            os.makedirs(img_dest, exist_ok=True)
+            os.makedirs(mask_dest, exist_ok=True)
+
+            for filename in files:
+                img_src_path = images_src / filename
+                # Assume mask has the same filename
+                mask_src_path = masks_src / filename 
+
+                if not mask_src_path.exists():
+                    # If mask has a different extension (e.g. .png vs .jpg), try to find it
+                    mask_found = False
+                    for ext in ['.png', '.jpg', '.jpeg']:
+                        potential_mask_path = masks_src / (Path(filename).stem + ext)
+                        if potential_mask_path.exists():
+                            mask_src_path = potential_mask_path
+                            mask_found = True
+                            break
+                    if not mask_found:
+                        progress.console.print(f"[yellow]Warning: Mask for {filename} not found. Skipping.[/yellow]")
+                        progress.update(main_task, advance=1)
+                        continue
+                
+                # Copy files
+                shutil.copy(img_src_path, img_dest / filename)
+                shutil.copy(mask_src_path, mask_dest / mask_src_path.name)
+                progress.update(main_task, advance=1)
     
-    for ann in coco_data['annotations']:
-        img_id = ann['image_id']
-        if img_id in train_ids:
-            train_data['annotations'].append(ann)
-        elif img_id in val_ids:
-            val_data['annotations'].append(ann)
-        else:
-            test_data['annotations'].append(ann)
-    
-    os.makedirs('/scratch/tathagata.ghosh/qgsam/data/hard_hat/train', exist_ok=True)
-    os.makedirs('/scratch/tathagata.ghosh/qgsam/data/hard_hat/val', exist_ok=True)
-    os.makedirs('/scratch/tathagata.ghosh/qgsam/data/hard_hat/test', exist_ok=True)
+    console.print("\n[bold green]Dataset split successfully![/bold green]")
+    console.print(f"  - Training set: {len(train_files)} images")
+    console.print(f"  - Validation set: {len(val_files)} images")
+    console.print(f"  - Test set: {len(test_files)} images")
+    console.print(f"Split data is located in: [cyan]'{output_dir}'[/cyan]")
 
-    with open('/scratch/tathagata.ghosh/qgsam/data/hard_hat/train/_annotations.coco.json', 'w') as f:
-        json.dump(train_data, f)
-    with open('/scratch/tathagata.ghosh/qgsam/data/hard_hat/val/_annotations.coco.json', 'w') as f:
-        json.dump(val_data, f)
-    with open('/scratch/tathagata.ghosh/qgsam/data/hard_hat/test/_annotations.coco.json', 'w') as f:
-        json.dump(test_data, f)
-    
-    src_dir = Path('/scratch/tathagata.ghosh/qgsam/hat_dataset/train')
-    for img in train_data['images']:
-        shutil.copy(src_dir / img['file_name'], f'/scratch/tathagata.ghosh/qgsam/data/hard_hat/train/{img["file_name"]}')
-    for img in val_data['images']:
-        shutil.copy(src_dir / img['file_name'], f'/scratch/tathagata.ghosh/qgsam/data/hard_hat/val/{img["file_name"]}')
-    for img in test_data['images']:
-        shutil.copy(src_dir / img['file_name'], f'/scratch/tathagata.ghosh/qgsam/data/hard_hat/test/{img["file_name"]}')
-    
-    print(f"Train: {len(train_data['images'])} images, {len(train_data['annotations'])} annotations")
-    print(f"Val: {len(val_data['images'])} images, {len(val_data['annotations'])} annotations")
-    print(f"Test: {len(test_data['images'])} images, {len(test_data['annotations'])} annotations")
 
 if __name__ == "__main__":
-    split_dataset()
+    parser = argparse.ArgumentParser(description="Split an image segmentation dataset into train, val, and test sets.")
+    parser.add_argument(
+        "base_dir", 
+        type=str, 
+        help="Path to the source dataset directory (e.g., 'Kvasir-SEG/')."
+    )
+    parser.add_argument(
+        "output_dir",
+        type=str,
+        help="Path to the directory where the split dataset will be saved."
+    )
+    parser.add_argument("--train_ratio", type=float, default=0.8, help="Proportion for the training set.")
+    parser.add_argument("--val_ratio", type=float, default=0.1, help="Proportion for the validation set.")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for shuffling.")
+
+    args = parser.parse_args()
+
+    # The test ratio is inferred from the train and val ratios
+    if args.train_ratio + args.val_ratio >= 1.0:
+        raise ValueError("The sum of train_ratio and val_ratio must be less than 1.")
+
+    split_dataset(args.base_dir, args.output_dir, args.train_ratio, args.val_ratio, args.seed)

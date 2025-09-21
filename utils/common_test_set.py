@@ -2,18 +2,7 @@ import os
 import json
 import random
 
-def get_common_test_set(test_dir, num_samples=5, seed=42):
-    """
-    Get a common set of test images to ensure fair comparison across methods
-    
-    Args:
-        test_dir: Directory containing test images
-        num_samples: Number of test images to select
-        seed: Random seed for reproducibility
-        
-    Returns:
-        List of image filenames to use for testing
-    """
+def get_common_test_set(test_dir, num_samples=150, seed=42):
     # Set random seed for reproducibility
     random.seed(seed)
     
