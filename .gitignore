@@ -221,3 +221,5 @@ checkpoints/
 Grounded-Segment-Anything/
 results/
 weights/
+
+dataset/*
