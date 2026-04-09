@@ -223,3 +223,11 @@ results/
 weights/
 
 dataset/*
+
+MD_Files/*
+MD_Files
+finetuned_model/
+gqa_data/
+wandb/
+eval_vis*/
+test_samples/

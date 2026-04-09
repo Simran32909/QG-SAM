@@ -1,0 +1,63 @@
+# QG-SAM default config
+#
+# GQA train / val splits (official balanced release):
+#   - Train: train_balanced_questions.json
+#   - Val:   val_balanced_questions.json
+# Both reference the same image pool; use one images/ directory (unzip GQA images there).
+# Override with CLI: --questions, --val_questions, --images
+data:
+  gqa_questions: /ssd_scratch/jyothi.swaroopa/Simran/qgsam/gqa_data/train_balanced_questions.json
+  gqa_val_questions: /ssd_scratch/jyothi.swaroopa/Simran/qgsam/gqa_data/val_balanced_questions.json
+  gqa_images: /ssd_scratch/jyothi.swaroopa/Simran/qgsam/gqa_data/images
+  # Keep only top-K most frequent answers; map others to unknown.
+  top_k_answers: 1000
+  unknown_answer_token: unknown
+  vqax_annotations: null
+  vqax_images: null
+  answer_vocab: null
+  max_train_samples: null
+  max_val_samples: null
+  image_size: 224
+  batch_size: 32
+  num_workers: 4
+
+model:
+  hidden_size: 512
+  image_feat_dim: 768
+  question_dim: 768
+  num_masks: 4
+  num_heads: 8
+  num_cross_layers: 1
+  num_reasoner_layers: 2
+  dropout: 0.1
+  clip_model: "openai/clip-vit-base-patch16"
+
+train:
+  lr: 1e-4
+  weight_decay: 0.01
+  label_smoothing: 0.1
+  use_class_weights: false
+  class_weight_mode: inverse_freq
+  class_weight_min: 0.1 
+  use_seg_loss: true
+  use_clip_loss: false
+  seg_loss_weight: 1.0
+  clip_loss_weight: 0.1
+  max_epochs: 30
+  gradient_clip_val: 0.5
+  # Log train losses every N optimizer steps
+  log_every_n_steps: 100
+  accelerator: gpu
+  devices: 1
+  precision: null
+
+wandb:
+  enabled: true
+  project: qgsam
+  # W&B run name (override with: --wandb_run_name my_run)
+  run_name: qgsam-gqa-clip-bert
+  log_model: false
+
+eval:
+  iou_threshold: 0.5
+  top_k: 5
