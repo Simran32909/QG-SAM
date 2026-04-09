@@ -231,3 +231,4 @@ gqa_data/
 wandb/
 eval_vis*/
 test_samples/
+paper/
