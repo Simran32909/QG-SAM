@@ -2,10 +2,10 @@ import os
 import sys
 
 # Path to the GroundingDINO ms_deform_attn.py file
-ms_deform_attn_path = "/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/GroundingDINO/groundingdino/models/GroundingDINO/ms_deform_attn.py"
+ms_deform_attn_path = "/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/GroundingDINO/groundingdino/models/GroundingDINO/ms_deform_attn.py"
 
 # Read our Python implementation
-with open("/scratch/tathagata.ghosh/qgsam/modified_groundingdino/ms_deform_attn_pytorch.py", "r") as f:
+with open("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/modified_groundingdino/ms_deform_attn_pytorch.py", "r") as f:
     python_impl = f.read()
 
 # Read the original file

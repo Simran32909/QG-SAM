@@ -9,7 +9,7 @@ from pathlib import Path
 from rich.progress import Progress, BarColumn, TextColumn, TaskProgressColumn, TimeRemainingColumn
 
 # --- Add SAM to Python path ---
-sys.path.append("/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/segment_anything")
+sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/segment_anything")
 from segment_anything import sam_model_registry, SamPredictor
 
 def load_oracle_boxes(annotation_file):
@@ -55,7 +55,7 @@ def run_oracle_sam_test(test_img_dir, test_mask_dir, annotation_file, output_dir
     Runs the Oracle-Guided SAM test on the Kvasir-SEG test set.
     """
     # --- Configuration ---
-    SAM_CHECKPOINT_PATH = "/scratch/tathagata.ghosh/qgsam/weights/sam_vit_h_4b8939.pth"
+    SAM_CHECKPOINT_PATH = "/ssd_scratch/jyothi.swaroopa/Simran/qgsam/weights/sam_vit_h_4b8939.pth"
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
     # --- Setup ---
@@ -202,19 +202,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "--base_dir", 
         type=str, 
-        default="/scratch/tathagata.ghosh/qgsam/dataset/Kvasir-SEG-split",
+        default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/dataset/Kvasir-SEG-split",
         help="Path to the split Kvasir-SEG dataset directory."
     )
     parser.add_argument(
         "--annotation_file",
         type=str,
-        default="/scratch/tathagata.ghosh/qgsam/dataset/Kvasir-SEG/kavsir_bboxes.json",
+        default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/dataset/Kvasir-SEG/kavsir_bboxes.json",
         help="Path to the ground truth bounding box JSON file."
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="/scratch/tathagata.ghosh/qgsam/results/oracle_sam_kvasir",
+        default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/results/oracle_sam_kvasir",
         help="Directory to save results and visualizations."
     )
     args = parser.parse_args()

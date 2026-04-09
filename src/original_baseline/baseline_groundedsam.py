@@ -17,7 +17,7 @@ except ImportError:
             return np.zeros((100, 100), dtype=bool)
     mask_utils = DummyMaskUtils()
 
-sys.path.append("/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/segment_anything")
+sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/segment_anything")
 from segment_anything import sam_model_registry, SamPredictor
 
 def simple_text_to_box(image, category_name, gt_bbox=None):
@@ -57,7 +57,7 @@ def run_simple_groundedsam(image_path, text_prompt, gt_bbox=None):
     Run a simplified version of GroundedSAM using ground truth boxes
     """
     # Load SAM model
-    SAM_CHECKPOINT_PATH = "/scratch/tathagata.ghosh/qgsam/weights/sam_vit_h_4b8939.pth"
+    SAM_CHECKPOINT_PATH = "/ssd_scratch/jyothi.swaroopa/Simran/qgsam/weights/sam_vit_h_4b8939.pth"
     device = "cuda" if torch.cuda.is_available() else "cpu"
     
     sam = sam_model_registry["vit_h"](checkpoint=SAM_CHECKPOINT_PATH)
@@ -138,8 +138,8 @@ def load_ground_truth_masks(annotation_file, image_id, image_shape):
 
 def run_simple_groundedsam_test():
     """Run simplified GroundedSAM test with evaluation metrics"""
-    test_dir = "/scratch/tathagata.ghosh/qgsam/hat_dataset/test"
-    output_dir = "/scratch/tathagata.ghosh/qgsam/results/simple_groundedsam"
+    test_dir = "/ssd_scratch/jyothi.swaroopa/Simran/qgsam/hat_dataset/test"
+    output_dir = "/ssd_scratch/jyothi.swaroopa/Simran/qgsam/results/simple_groundedsam"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
@@ -159,7 +159,7 @@ def run_simple_groundedsam_test():
     file_to_image_id = {img['file_name']: img['id'] for img in annotations['images']}
     
     # Use exactly 150 samples for testing
-    sys.path.append("/scratch/tathagata.ghosh/qgsam/utils")
+    sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/utils")
     from common_test_set import get_common_test_set
     sample_images = get_common_test_set(test_dir, num_samples=150)  # Fixed test size
     

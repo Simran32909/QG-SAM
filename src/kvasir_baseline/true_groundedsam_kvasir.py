@@ -9,9 +9,9 @@ from pathlib import Path
 from rich.progress import Progress, BarColumn, TextColumn, TaskProgressColumn, TimeRemainingColumn
 
 # --- Add Grounded-SAM to Python path ---
-sys.path.append("/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything")
-sys.path.append("/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/GroundingDINO")
-sys.path.append("/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/segment_anything")
+sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything")
+sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/GroundingDINO")
+sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/segment_anything")
 
 from groundingdino.util.inference import load_model as dino_load_model, load_image as dino_load_image
 from segment_anything import sam_model_registry, SamPredictor
@@ -211,11 +211,11 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Run True End-to-End Grounded-SAM test.")
     # Paths
-    parser.add_argument("--base_dir", type=str, default="/scratch/tathagata.ghosh/qgsam/dataset/Kvasir-SEG-split")
-    parser.add_argument("--output_dir", type=str, default="/scratch/tathagata.ghosh/qgsam/results/true_groundedsam_kvasir")
-    parser.add_argument("--groundingdino_config_path", type=str, default="/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py")
-    parser.add_argument("--groundingdino_checkpoint_path", type=str, default="/scratch/tathagata.ghosh/qgsam/weights/groundingdino_swint_ogc.pth")
-    parser.add_argument("--sam_checkpoint_path", type=str, default="/scratch/tathagata.ghosh/qgsam/weights/sam_vit_h_4b8939.pth")
+    parser.add_argument("--base_dir", type=str, default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/dataset/Kvasir-SEG-split")
+    parser.add_argument("--output_dir", type=str, default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/results/true_groundedsam_kvasir")
+    parser.add_argument("--groundingdino_config_path", type=str, default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py")
+    parser.add_argument("--groundingdino_checkpoint_path", type=str, default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/weights/groundingdino_swint_ogc.pth")
+    parser.add_argument("--sam_checkpoint_path", type=str, default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/weights/sam_vit_h_4b8939.pth")
     # Model params
     parser.add_argument("--box_threshold", type=float, default=0.15)
     parser.add_argument("--text_threshold", type=float, default=0.15)

@@ -42,9 +42,9 @@ def cxcywh_to_xyxy_pixel(boxes, image_shape):
     xyxy[:, 3] = np.clip(xyxy[:, 3], 0, H-1)
     return xyxy
 
-sys.path.append("/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything")
-sys.path.append("/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/GroundingDINO")
-sys.path.append("/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/segment_anything")
+sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything")
+sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/GroundingDINO")
+sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/segment_anything")
 
 from segment_anything import sam_model_registry, SamPredictor
 
@@ -340,8 +340,8 @@ def visualize_results(image, boxes, masks, gt_mask, output_path):
     plt.close()
 
 def run_comb_baseline(args):
-    test_dir = "/scratch/tathagata.ghosh/qgsam/hat_dataset/test"
-    output_dir = "/scratch/tathagata.ghosh/qgsam/results/true_baseline"
+    test_dir = "/ssd_scratch/jyothi.swaroopa/Simran/qgsam/hat_dataset/test"
+    output_dir = "/ssd_scratch/jyothi.swaroopa/Simran/qgsam/results/true_baseline"
     os.makedirs(output_dir, exist_ok=True)
 
     print("Loading Models...")
@@ -352,7 +352,7 @@ def run_comb_baseline(args):
         args.device
     )
 
-    sys.path.append("/scratch/tathagata.ghosh/qgsam/utils")
+    sys.path.append("/ssd_scratch/jyothi.swaroopa/Simran/qgsam/utils")
     from common_test_set import get_common_test_set
     test_images = get_common_test_set(args.test_dir, num_samples=150)
 
@@ -518,31 +518,31 @@ if __name__ == "__main__":
     parser.add_argument(
         "--test_dir", 
         type=str, 
-        default="/scratch/tathagata.ghosh/qgsam/hat_dataset/test",
+        default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/hat_dataset/test",
         help="Path to the test dataset directory"
     )
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="/scratch/tathagata.ghosh/qgsam/results/true_baseline",
+        default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/results/true_baseline",
         help="Path to save results and visualizations"
     )
     parser.add_argument(
         "--groundingdino_config_path", 
         type=str, 
-        default="/scratch/tathagata.ghosh/qgsam/Grounded-Segment-Anything/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py",
+        default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/Grounded-Segment-Anything/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py",
         help="Path to GroundingDINO config file"
     )
     parser.add_argument(
         "--groundingdino_checkpoint_path",
         type=str,
-        default="/scratch/tathagata.ghosh/qgsam/weights/groundingdino_swint_ogc.pth",
+        default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/weights/groundingdino_swint_ogc.pth",
         help="Path to GroundingDINO checkpoint file"
     )
     parser.add_argument(
         "--sam_checkpoint_path",
         type=str,
-        default="/scratch/tathagata.ghosh/qgsam/weights/sam_vit_h_4b8939.pth",
+        default="/ssd_scratch/jyothi.swaroopa/Simran/qgsam/weights/sam_vit_h_4b8939.pth",
         help="Path to SAM checkpoint file"
     )
     parser.add_argument(
